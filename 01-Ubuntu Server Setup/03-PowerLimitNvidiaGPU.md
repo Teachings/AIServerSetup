@@ -25,6 +25,7 @@ This guide explains how to set the power limit for NVIDIA GPUs at system startup
     ExecStart=/usr/bin/nvidia-smi -i 0 -pl 270
     ExecStart=/usr/bin/nvidia-smi -i 1 -pl 270
     ExecStart=/usr/bin/nvidia-smi -i 2 -pl 270
+    ExecStart=/usr/bin/nvidia-smi -i 3 -pl 270
 
     [Install]
     WantedBy=multi-user.target

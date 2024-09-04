@@ -1,9 +1,8 @@
-# Ollama Docker Image Setup
+# Ollama & OpenWebUI Docker Setup
+
+## Ollama with Nvidia GPU
 
 Ollama makes it easy to get up and running with large language models locally.
-
-## Nvidia GPU
-
 To run Ollama using an Nvidia GPU, follow these steps:
 
 ### Step 1: Install the NVIDIA Container Toolkit
@@ -59,13 +58,13 @@ docker run -d --gpus=all -v ollama:/root/.ollama -p 11434:11434 --name ollama ol
 
 You can run multiple instances of the Ollama server and assign specific GPUs to each instance. In my server, I have 4 Nvidia 3090 GPUs, which I use as described below:
 
-### Ollama Server for GPUs 0 and 2
+### Ollama Server for GPUs 0 and 1
 
 ```bash
 docker run -d --gpus '"device=0,1"' -v ollama:/root/.ollama -p 11435:11434 --restart always --name ollama1 --network ollama-network ollama/ollama
 ```
 
-### Ollama Server for GPUs 1 and 3
+### Ollama Server for GPUs 2 and 3
 
 ```bash
 docker run -d --gpus '"device=2,3"' -v ollama:/root/.ollama -p 11436:11434 --restart always --name ollama2 --network ollama-network ollama/ollama

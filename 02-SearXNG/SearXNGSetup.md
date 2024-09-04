@@ -13,10 +13,6 @@ This guide walks you through the steps to run a SearXNG instance in Docker using
 
 ### 1. Use the Official Image or Clone the SearXNG Repository
 
-You have two options for setting up SearXNG:
-
-#### Option 1: Use the Official Image
-
 You can pull the official image directly from Docker Hub:
 
 ```bash
