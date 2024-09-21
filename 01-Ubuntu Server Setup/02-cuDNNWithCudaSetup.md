@@ -1,4 +1,4 @@
-### Setting Up cuDNN with CUDA: A Comprehensive Guide
+### OPTIONAL: Setting Up cuDNN with CUDA: A Comprehensive Guide
 
 This guide will walk you through downloading cuDNN from NVIDIA's official site, extracting it, copying the necessary files to the CUDA directory, and setting up environment variables for CUDA.
 

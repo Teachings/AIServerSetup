@@ -82,45 +82,4 @@ Validate the installation:
    nvidia-smi
    ```
 
-3. Compile and run sample CUDA programs, adjust for the installed version:
-   ```bash
-   cuda-install-samples-12.0.sh ~  
-   cd ~/NVIDIA_CUDA-12.0_Samples/1_Utilities/deviceQuery
-   make
-   ./deviceQuery
-   ```
-
-### Step 6: Compile and Run a CUDA Program in Python
-
-Create a simple CUDA test program in Python using the `numba` library:
-
-1. Install the `numba` library:
-   ```bash
-   pip install numba
-   ```
-
-2. Create a file `hello.py`:
-   ```python
-   from numba import cuda
-   import numpy as np
-
-   @cuda.jit
-   def hello_from_gpu():
-       print("Hello from GPU!")
-
-   def main():
-       hello_from_gpu[1, 1]()
-       cuda.synchronize()
-       print("Hello from CPU!")
-
-   if __name__ == "__main__":
-       main()
-   ```
-
-3. Run the program:
-   ```bash
-   python hello.py
-   ```
-   If this prints "Hello from GPU!" and "Hello from CPU!", you have successfully installed CUDA on Ubuntu 22.04 LTS.
-
 You can now leverage the power of your GPU for parallel workloads.

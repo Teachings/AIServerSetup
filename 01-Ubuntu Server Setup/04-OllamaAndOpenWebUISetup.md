@@ -51,7 +51,7 @@ sudo systemctl restart docker
 ### Step 3: Start the Container
 
 ```bash
-docker run -d --gpus=all -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama
+docker run -d --gpus=all -v ollama:/root/.ollama -p 11434:11434 --restart always --name ollama ollama/ollama
 ```
 
 ## Running Multiple Instances with Specific GPUs
@@ -75,7 +75,19 @@ docker run -d --gpus '"device=2,3"' -v ollama:/root/.ollama -p 11436:11434 --res
 Once the container is up and running, you can execute models using:
 
 ```bash
-docker exec -it ollama ollama run llama3
+docker exec -it ollama ollama run llama3.1
+```
+
+```bash
+docker exec -it ollama ollama run llama3.1:70b
+```
+
+```bash
+docker exec -it ollama ollama run qwen2.5-coder:1.5b
+```
+
+```bash
+docker exec -it ollama ollama run deepseek-v2
 ```
 
 ### Try Different Models

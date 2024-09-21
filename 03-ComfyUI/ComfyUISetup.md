@@ -9,10 +9,19 @@ Before starting, ensure you have the following installed on your system:
 
 - **Docker**
 - **NVIDIA GPU with CUDA support** (if using GPU acceleration)
+- **Create Directory structure for git repo Models and Checkpoints**
+
+```bash
+mkdir -p ~/dev-ai/vison/models/checkpoints
+```
 
 ### 1. Clone the ComfyUI Repository
 
-First, clone the ComfyUI repository to your local machine:
+First, navigate to `~/dev-ai/vison` directory and clone the ComfyUI repository to your local machine:
+
+```bash
+cd ~/dev-ai/vison
+```
 
 ```bash
 git clone https://github.com/comfyanonymous/ComfyUI.git
@@ -21,47 +30,9 @@ cd ComfyUI
 
 ### 2. Create the Dockerfile
 
-Create a `Dockerfile` in the root of your ComfyUI directory with the following content:
-
-```Dockerfile
-# Base image with Python 3.11 and CUDA 12.5 support
-FROM nvidia/cuda:12.5.0-runtime-ubuntu22.04
-
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    git \
-    python3-pip \
-    libgl1-mesa-glx \
-    && rm -rf /var/lib/apt/lists/*
-
-# Set working directory
-WORKDIR /app
-
-# Copy the cloned ComfyUI repository
-COPY . /app
-
-# Install Python dependencies
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
-
-# Clone and install ComfyUI Manager
-RUN git clone https://github.com/ltdrdata/ComfyUI-Manager.git /app/custom_nodes/ComfyUI-Manager && \
-    pip install -r /app/custom_nodes/ComfyUI-Manager/requirements.txt
-
-# Clone and install GGUF support for ComfyUI
-RUN git clone https://github.com/city96/ComfyUI-GGUF.git /app/custom_nodes/ComfyUI-GGUF && \
-    pip install --upgrade gguf
-
-# Expose the port used by ComfyUI
-EXPOSE 8188
-
-# Run ComfyUI with the server binding to 0.0.0.0
-CMD ["python3", "main.py", "--listen", "0.0.0.0"]
-```
+Copy the provided `Dockerfile` in the root of your ComfyUI directory. This file contains the necessary configurations for building the Docker container with GGUF support.
 
 ### 3. Build the Docker Image
-
-Navigate to the directory where the `Dockerfile` is located and build the Docker image:
 
 ```bash
 docker build -t comfyui-gguf:latest .
@@ -82,6 +53,9 @@ docker run --name comfyui -p 8188:8188 --gpus all \
 This command maps your local `models` directory to `/app/models` inside the container and exposes ComfyUI on port `8188`.
 
 ### 5. Download and Place Checkpoint Models
+
+Download and place your civitai checkpoint models in the `checkpoints` directory inside the container:
+https://civitai.com/models/139562/realvisxl-v50
 
 To use GGUF models or other safetensor models, follow the steps below to download them directly into the `checkpoints` directory.
 
@@ -147,7 +121,3 @@ docker logs comfyui
 ```
 
 This will provide details if anything goes wrong or if you encounter issues with GGUF models or node management.
-
----
-
-This `README.md` provides the complete steps to set up **ComfyUI with GGUF support** in Docker, with instructions for downloading models into the checkpoints directory and managing nodes using ComfyUI Manager.

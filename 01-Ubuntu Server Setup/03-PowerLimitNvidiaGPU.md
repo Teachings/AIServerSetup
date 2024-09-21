@@ -1,4 +1,4 @@
-# Setting NVIDIA GPU Power Limit at System Startup
+# OPTIONAL: Setting NVIDIA GPU Power Limit at System Startup
 
 ## Overview
 
@@ -15,6 +15,23 @@ This guide explains how to set the power limit for NVIDIA GPUs at system startup
     ```
 
 2. Add the following content to the file, replacing `270` with the desired power limit (e.g., 270 watts for your GPUs):
+
+    - For Dual GPU Setup:
+
+    ```ini
+    [Unit]
+    Description=Set NVIDIA GPU Power Limit
+
+    [Service]
+    Type=oneshot
+    ExecStart=/usr/bin/nvidia-smi -i 0 -pl 270
+    ExecStart=/usr/bin/nvidia-smi -i 1 -pl 270
+
+    [Install]
+    WantedBy=multi-user.target
+    ```
+
+    - For Quad GPU Setup:
 
     ```ini
     [Unit]

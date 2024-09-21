@@ -30,7 +30,7 @@ Run the Docker container using your custom `settings.yml` file. Choose the appro
 #### For the Official Image:
 
 ```bash
-docker run -d -p 4000:8080 -v ./settings.yml:/etc/searxng/settings.yml searxng/searxng:latest
+docker run -d -p 4000:8080 --restart always --name searxng -v ./settings.yml:/etc/searxng/settings.yml searxng/searxng:latest
 ```
 
 #### Command Breakdown:
@@ -41,18 +41,18 @@ docker run -d -p 4000:8080 -v ./settings.yml:/etc/searxng/settings.yml searxng/s
 
 ### 4. Access SearXNG
 
-Once the container is running, you can access your SearXNG instance by navigating to `http://localhost:4000` in your web browser.
+Once the container is running, you can access your SearXNG instance by navigating to `http://<hostname>:4000` in your web browser.
 
 ### 5. Testing JSON Output
 
 To verify that the JSON output is correctly configured, you can use `curl` or a similar tool:
 
 ```bash
-curl http://localhost:4000/search?q=python&format=json
+curl http://<hostname>:4000/search?q=python&format=json
 ```
 
 This should return search results in JSON format.
 
-## Conclusion
+### 5. Configuration URL for OpenWebUI
 
-By following these steps, you have successfully set up a SearXNG instance running in Docker with a customized configuration. This setup allows you to easily modify settings without rebuilding the Docker image, offering flexibility and ease of use.
+http://<hostname>:4000/search?q=<query>
