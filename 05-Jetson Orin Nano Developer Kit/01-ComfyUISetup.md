@@ -106,7 +106,7 @@ python main.py --listen 0.0.0.0
 
 Visit the provided URL by ComfyUI (`http://jetson:8188`) on your Jetson Nano.
 
-Go to the [ControlNet reference demo](https://civitai.com/posts/3943573), download image, import it in comfyUI.
+Go to the [ControlNet reference demo](https://civitai.com/posts/3943573), download the workflow (also available in the repo as workflow-api.json) and, import it in comfyUI.
 
 And hit the "Queue Prompt" button, and watch the magic unfold!
 
