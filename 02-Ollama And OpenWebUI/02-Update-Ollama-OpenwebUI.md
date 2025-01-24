@@ -16,7 +16,7 @@ This guide explains the steps to update Docker containers for **Ollama** and **O
 For GPU devices 0 and 1:
 
 ```bash
-docker stop
+docker stop ollama
 docker rm ollama
 docker pull ollama/ollama
 docker run -d --gpus '"device=0,1"' -v ollama:/root/.ollama -p 11434:11434 --restart always --name ollama1 -e OLLAMA_KEEP_ALIVE=1h ollama/ollama
@@ -25,7 +25,7 @@ docker run -d --gpus '"device=0,1"' -v ollama:/root/.ollama -p 11434:11434 --res
 For NVIDIA jetson/cpu
 
 ```bash
-docker stop
+docker stop ollama
 docker rm ollama
 docker pull ollama/ollama
 docker run -d -v ollama:/root/.ollama -p 11434:11434 --restart always --name ollama1 -e OLLAMA_KEEP_ALIVE=1h ollama/ollama
