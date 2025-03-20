@@ -19,7 +19,7 @@ For GPU devices 0 and 1:
 docker stop ollama
 docker rm ollama
 docker pull ollama/ollama
-docker run -d --gpus '"device=0,1"' -v ollama:/root/.ollama -p 11434:11434 --restart always --name ollama1 -e OLLAMA_KEEP_ALIVE=1h ollama/ollama
+docker run -d --gpus '"device=0,1"' -v ollama:/root/.ollama -p 11434:11434 --restart always --name ollama -e OLLAMA_KEEP_ALIVE=1h ollama/ollama
 ```
 
 For NVIDIA jetson/cpu
@@ -28,7 +28,7 @@ For NVIDIA jetson/cpu
 docker stop ollama
 docker rm ollama
 docker pull ollama/ollama
-docker run -d -v ollama:/root/.ollama -p 11434:11434 --restart always --name ollama1 -e OLLAMA_KEEP_ALIVE=1h ollama/ollama
+docker run -d -v ollama:/root/.ollama -p 11434:11434 --restart always --name ollama -e OLLAMA_KEEP_ALIVE=1h ollama/ollama
 ```
 ---
 
