@@ -56,7 +56,9 @@ Download the official DeepSeek-R1-0528 FP8 base model components.
 # Ensure that correct packages are installed. Conda is recommended for environemnt management.
 pip install -U huggingface_hub hf_transfer
 export HF_HUB_ENABLE_HF_TRANSFER=1 # For faster downloads
+```
 
+```bash
 # Define your host model directory
 HOST_MODEL_DIR="/home/mukul/dev-ai/models"
 BASE_MODEL_HF_ID="deepseek-ai/DeepSeek-R1-0528"
@@ -67,10 +69,12 @@ mkdir -p "${LOCAL_BASE_MODEL_PATH}"
 echo "Downloading base model to: ${LOCAL_BASE_MODEL_PATH}"
 huggingface-cli download --resume-download "${BASE_MODEL_HF_ID}" \
   --local-dir "${LOCAL_BASE_MODEL_PATH}"```
+```
 
-### Step 2b: Download Q4\_K\_M GGUF Model (Host)
+### Step 2b: Download Q4_K_M GGUF Model (Host)
 
-Download the Unsloth Q4\_K\_M GGUF version of DeepSeek-R1-0528 using the attached python script.
+Download the Unsloth Q4_K_M GGUF version of DeepSeek-R1-0528 using the attached python script.
+
 ### Step 2c: Merge Models (Inside Docker)
 
 This step uses the KTransformers Docker image to merge the FP8 base and Q4\_K\_M GGUF weights.
@@ -212,7 +216,7 @@ python3 ktransformers/server/main.py \
     --host 0.0.0.0 \
     --port 10002
 ```
-*Note: The `--optimize_config_path` still refers to a `DeepSeek-V3` YAML. Verify compatibility.*
+*Note: The `--optimize_config_path` still refers to a `DeepSeek-V3` YAML. This is intentional.*
 
 ---
 
