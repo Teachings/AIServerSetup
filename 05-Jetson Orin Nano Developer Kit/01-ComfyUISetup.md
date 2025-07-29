@@ -56,7 +56,32 @@ Next, confirm that CUDA is installed correctly by checking the `nvcc` version.
 nvcc --version
 ```
 
-### Step 3: Installing PyTorch, TorchVision, and TorchAudio
+### Step 3: Cloning the Project Repository
+
+Now, we clone the necessary source code for the project from GitHub. This will include the files for running uncensored models from civtai.com.
+
+```bash
+git clone https://github.com/comfyanonymous/ComfyUI.git
+cd ComfyUI
+```
+
+### Step 4: Installing Project Dependencies
+
+Next, install the required dependencies for the project by running the `requirements.txt` file.
+
+```bash
+pip install -r requirements.txt
+```
+
+### Step 5: Resolving Issues with NumPy (if necessary)
+
+If you encounter issues with NumPy, such as compatibility problems, you can fix it by downgrading to a version below 2.0.
+
+```bash
+pip install "numpy<2"
+```
+
+### Step 6: Installing PyTorch, TorchVision, and TorchAudio
 
 Now let's install the essential libraries for image generation: PyTorch, TorchVision, and Torchaudio from here [devpi - cu12.6](http://jetson.webredirect.org/jp6/cu126)
 
@@ -80,31 +105,6 @@ cd torchaudio
 git checkout v2.5.0
 USE_CUDA=1 pip install -v -e . --no-use-pep517
 python setup.py install --user
-```
-
-### Step 4: Cloning the Project Repository
-
-Now, we clone the necessary source code for the project from GitHub. This will include the files for running uncensored models from civtai.com.
-
-```bash
-git clone https://github.com/comfyanonymous/ComfyUI.git
-cd ComfyUI
-```
-
-### Step 5: Installing Project Dependencies
-
-Next, install the required dependencies for the project by running the `requirements.txt` file.
-
-```bash
-pip install -r requirements.txt
-```
-
-### Step 6: Resolving Issues with NumPy (if necessary)
-
-If you encounter issues with NumPy, such as compatibility problems, you can fix it by downgrading to a version below 2.0.
-
-```bash
-pip install "numpy<2"
 ```
 
 ### Step 7: Running ComfyUI
