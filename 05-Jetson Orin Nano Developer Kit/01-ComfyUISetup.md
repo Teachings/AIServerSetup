@@ -5,6 +5,23 @@ This guide is aimed at helping you set up uncensored models seamlessly on your J
 This tutorial will walk you through each step of the process. Even if you're starting from a fresh installation, following along should ensure everything is set up correctly. And if anything doesn’t work as expected, feel free to reach out—I'll keep this guide updated to keep it running smoothly.
 
 ---
+## Preparation
+* Ubuntu 22.04 JetPack 6.2.x
+* nvidia-jetson package - require TorchAudio, TorchVision build
+* cmake 4.x.x or higher - require ComfyUI build
+* Up-to-date all packages - require pytorch build
+
+Require this package from build TorchAudio, TorchVision
+```bash
+sudo apt install ffmpeg libavformat-dev libavcodec-dev libavutil-dev libavdevice-dev libavfilter-dev
+```
+
+If your `cmake` version is below 3.5.x, you need update cmake version.
+`pip install cmake` isn't work because build process isn't using python cmake package.
+```bash
+git clone https://github.com/Kitware/CMake --depth 1
+./bootstrap && make && sudo make install
+```
 
 ## Let’s Dive In
 
@@ -30,7 +47,7 @@ conda activate comfyui
 ### Step 2: Installing CUDA, cuDNN, TensorRT, and Verifying nvcc
 
 ```bash
-Preconfigured on JetPack 6.1!
+Preconfigured on JetPack 6.2!
 ```
 
 Next, confirm that CUDA is installed correctly by checking the `nvcc` version.
@@ -44,9 +61,25 @@ nvcc --version
 Now let's install the essential libraries for image generation: PyTorch, TorchVision, and Torchaudio from here [devpi - cu12.6](http://jetson.webredirect.org/jp6/cu126)
 
 ```bash
-pip install https://pypi.jetson-ai-lab.dev/jp6/cu126/+f/5cf/9ed17e35cb752/torch-2.5.0-cp310-cp310-linux_aarch64.whl
-pip install https://pypi.jetson-ai-lab.dev/jp6/cu126/+f/9d2/6fac77a4e832a/torchvision-0.19.1a0+6194369-cp310-cp310-linux_aarch64.whl
-pip install https://pypi.jetson-ai-lab.dev/jp6/cu126/+f/812/4fbc4ba6df0a3/torchaudio-2.5.0-cp310-cp310-linux_aarch64.whl
+pip install https://developer.download.nvidia.com/compute/redist/jp/v61/pytorch/torch-2.5.0a0+872d972e41.nv24.08.17622132-cp310-cp310-linux_aarch64.whl
+```
+
+You need build TorchVision.
+```bash
+git clone https://github.com/pytorch/vision torchvision
+cd torchvison
+git checkout v0.19.1
+USE_CUDA=1 pip install -v -e . --no-use-pep517
+python setup.py install --user
+```
+
+If you're using audio generation, build TorchAudio (Optional)
+```bash
+git clone https://github.com/pytorch/audio torchaudio
+cd torchaudio
+git checkout v2.5.0
+USE_CUDA=1 pip install -v -e . --no-use-pep517
+python setup.py install --user
 ```
 
 ### Step 4: Cloning the Project Repository
