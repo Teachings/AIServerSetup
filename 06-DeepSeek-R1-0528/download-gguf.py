@@ -2,11 +2,11 @@ from huggingface_hub import hf_hub_download, list_repo_files # Import list_repo_
 import os
 
 # Configuration
-repo_id = "unsloth/DeepSeek-R1-0528-GGUF"
+repo_id = "unsloth/Llama-4-Maverick-17B-128E-Instruct-GGUF"
 folder_in_repo = "Q4_K_M"
 file_extension = ".gguf"
 # Expand the tilde (~) to the user's home directory
-local_base_dir = os.path.expanduser("~/dev-ai/models/unsloth/DeepSeek-R1-0528-GGUF")
+local_base_dir = os.path.expanduser("/media/mukul/extra/models/unsloth/Llama-4-Maverick-17B-128E-Instruct-GGUF")
 
 # Create base directory
 # The hf_hub_download function will create the directory if it doesn't exist

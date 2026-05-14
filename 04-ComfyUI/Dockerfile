@@ -1,5 +1,5 @@
-# Base image with Python 3.11 and CUDA 12.5 support
-FROM nvidia/cuda:12.5.0-runtime-ubuntu22.04
+# Base image with Python 3.11 and CUDA 12.9 support
+FROM nvidia/cuda:12.8.0-runtime-ubuntu22.04
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \

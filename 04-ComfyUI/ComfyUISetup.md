@@ -45,7 +45,7 @@ This will create a Docker image named `comfyui-gguf:latest` with both **ComfyUI 
 Once the image is built, you can run the Docker container with volume mapping for your models.
 
 ```bash
-docker run --name comfyui -p 8188:8188 --gpus all \
+docker run --name comfyui --rm -p 8188:8188 --gpus '"device=0"' \
   -v /home/mukul/dev-ai/vison/models:/app/models \
   -d comfyui-gguf:latest
 ```
