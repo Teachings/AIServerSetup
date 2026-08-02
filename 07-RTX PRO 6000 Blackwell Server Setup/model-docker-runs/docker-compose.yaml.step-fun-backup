@@ -1,0 +1,84 @@
+services:
+  jarvis-thinker:
+    image: vllm/vllm-openai:stepfun37-cu129
+    entrypoint: ["/bin/bash", "-lc"]
+    command:
+      - |
+        vllm serve /models/stepfun-ai/Step-3.7-Flash-NVFP4 \
+          --served-model-name jarvis-thinker \
+          --host 0.0.0.0 \
+          --port 8000 \
+          --kv-cache-dtype bfloat16 \
+          --tensor-parallel-size 2 \
+          --gpu-memory-utilization 0.75 \
+          --enable-expert-parallel \
+          --trust-remote-code \
+          --quantization modelopt \
+          --max-model-len 262144 \
+          --max-num-seqs 8 \
+          --reasoning-parser step3p5 \
+          --enable-auto-tool-choice \
+          --tool-call-parser step3p5
+    ports:
+      - "10002:8000"
+    volumes:
+      - /media/mukul/data/models:/models
+    environment:
+      - HF_HOME=/models/.hf-cache
+    shm_size: "32g"
+    ipc: host
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["0", "2"]
+              capabilities: [gpu]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+
+  jarvis:
+    image: vllm/vllm-openai:nightly
+    command:
+      - /models/nvidia/Qwen3.6-35B-A3B-NVFP4
+      - --served-model-name=jarvis
+      - --host=0.0.0.0
+      - --port=8000
+      - --kv-cache-dtype=fp8
+      - --tensor-parallel-size=2
+      - --gpu-memory-utilization=0.16
+      - --enable-expert-parallel
+      - --trust-remote-code
+      - --quantization=modelopt
+      - --max-model-len=196000
+      - --max-num-seqs=8
+      - --reasoning-parser=qwen3
+      - --enable-auto-tool-choice
+      - --tool-call-parser=qwen3_coder
+    ports:
+      - "10006:8000"
+    volumes:
+      - /media/mukul/data/models:/models
+    environment:
+      - HF_HOME=/models/.hf-cache
+    shm_size: "32g"
+    ipc: host
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["0", "2"]
+              capabilities: [gpu]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
