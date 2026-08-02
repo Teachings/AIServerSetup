@@ -18,7 +18,7 @@
 ## GPU Details
 
 ### RTX PRO 6000 Blackwell (Slots 0 & 2)
-- **Architecture:** Blackwell (GB200)
+- **Architecture:** Blackwell
 - **VBIOS:** 98.02.81.00.07
 - **Board Part:** 900-5G144-2200-000
 - **Performance State:** P1 (under load)
