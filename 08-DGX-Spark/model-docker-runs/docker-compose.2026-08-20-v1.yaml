@@ -1,0 +1,133 @@
+services:
+  # ─────────────────────────────────────────────────────────────
+  # jarvis-gate — small ARM64-runnable gate model (Granite 4.1 3B AWQ)
+  # NOTE: original used `vllm/vllm-openai:latest` (x86-only). Spark is
+  # aarch64, so pinned to the local ARM64 cu130-nightly build already on the box.
+  # Shares the single GB10 GPU with `jarvis` (Ornith).
+  # ─────────────────────────────────────────────────────────────
+  jarvis-gate:
+    image: vllm/vllm-openai:cu130-nightly
+
+    command:
+      - /models/cyankiwi/granite-4.1-3b-AWQ-INT4
+      - --served-model-name=jarvis-gate
+      - --trust-remote-code
+      - --host=0.0.0.0
+      - --port=10009
+      - --dtype=auto
+      - --kv-cache-dtype=fp8
+      - --max-model-len=16384
+      - --gpu-memory-utilization=0.08
+      - --max-num-seqs=2
+      - --max-num-batched-tokens=2048
+      - --enable-prefix-caching
+
+    network_mode: host
+
+    volumes:
+      - /home/mukul/dev-ai/models:/models:ro
+
+    environment:
+      HF_HOME: /root/.cache/huggingface
+      HF_HUB_OFFLINE: "1"
+      CUDA_DEVICE_ORDER: PCI_BUS_ID
+      CUDA_VISIBLE_DEVICES: "0"
+      PYTORCH_CUDA_ALLOC_CONF: expandable_segments:True
+
+    shm_size: "8g"
+    ipc: host
+
+    ulimits:
+      memlock: -1
+      stack: 67108864
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["0"]
+              capabilities: [gpu]
+
+    restart: unless-stopped
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:10009/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 180s
+
+  # ─────────────────────────────────────────────────────────────
+  # jarvis — Ornith-1.0-35B-AEON-Ultimate-Uncensored-NVFP4 (Qwen3.6-35B-A3B base)
+  # Must use the AEON container (stock vLLM cannot serve qwen3_5_moe on the Spark).
+  # Exact flags verified working on the Spark (DFlash drafter, 0.6 mem, max-seqs 16,
+  # BF16 KV — NO kv-cache fp8, vision forces BF16).
+  # ─────────────────────────────────────────────────────────────
+  jarvis:
+    image: ghcr.io/aeon-7/aeon-vllm-ultimate:latest
+    entrypoint: ["vllm"]
+
+    command:
+      - "serve"
+      - "/model"
+      - "--served-model-name=jarvis"
+      - "--host=0.0.0.0"
+      - "--port=10010"
+      - "--quantization=compressed-tensors"
+      - "--speculative-config={\"method\":\"dflash\",\"model\":\"/drafter\",\"num_speculative_tokens\":6}"
+      - "--gpu-memory-utilization=0.6"
+      - "--max-model-len=262144"
+      - "--max-num-seqs=16"
+      - "--max-num-batched-tokens=16384"
+      - "--mamba-cache-dtype=float32"
+      - "--reasoning-parser=qwen3"
+      - "--enable-auto-tool-choice"
+      - "--tool-call-parser=qwen3_coder"
+      - "--limit-mm-per-prompt={\"image\":4,\"video\":2}"
+      - "--mm-encoder-tp-mode=data"
+      - "--attention-backend=flash_attn"
+      - "--enable-chunked-prefill"
+      - "--enable-prefix-caching"
+      - "--trust-remote-code"
+
+    network_mode: host
+
+    volumes:
+      - /home/mukul/dev-ai/models/AEON-7/Ornith-1.0-35B-AEON-Ultimate-Uncensored-NVFP4:/model:ro
+      - /home/mukul/dev-ai/models/AEON-7/AEON-DFlash-Qwen3.6-35B-A3B:/drafter:ro
+
+    environment:
+      TORCH_CUDA_ARCH_LIST: "12.1a"
+      CUTE_DSL_ARCH: sm_121a
+      VLLM_USE_FLASHINFER_SAMPLER: "1"
+      VLLM_ENABLE_CUDA_COMPATIBILITY: "0"
+      HF_HOME: /root/.cache/huggingface
+      HF_HUB_OFFLINE: "1"
+      CUDA_DEVICE_ORDER: PCI_BUS_ID
+      CUDA_VISIBLE_DEVICES: "0"
+      PYTORCH_CUDA_ALLOC_CONF: expandable_segments:True
+
+    shm_size: "8g"
+    ipc: host
+
+    ulimits:
+      memlock: -1
+      stack: 67108864
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["0"]
+              capabilities: [gpu]
+
+    restart: unless-stopped
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:10010/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 300s

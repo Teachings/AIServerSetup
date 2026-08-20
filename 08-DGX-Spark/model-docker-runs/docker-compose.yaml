@@ -1,0 +1,124 @@
+services:
+  # ─────────────────────────────────────────────────────────────
+  # jarvis-gate — small ARM64-runnable gate model (Granite 4.1 3B AWQ)
+  # NOTE: original used `vllm/vllm-openai:latest` (x86-only). Spark is
+  # aarch64, so pinned to the local ARM64 cu130-nightly build already on the box.
+  # Shares the single GB10 GPU with `jarvis` (Ornith).
+  # ─────────────────────────────────────────────────────────────
+  jarvis-gate:
+    image: vllm/vllm-openai:cu130-nightly
+
+    command:
+      - /models/cyankiwi/granite-4.1-3b-AWQ-INT4
+      - --served-model-name=jarvis-gate
+      - --trust-remote-code
+      - --host=0.0.0.0
+      - --port=10009
+      - --dtype=auto
+      - --kv-cache-dtype=fp8
+      - --max-model-len=16384
+      - --gpu-memory-utilization=0.08
+      - --max-num-seqs=2
+      - --max-num-batched-tokens=2048
+      - --enable-prefix-caching
+
+    network_mode: host
+
+    volumes:
+      - /home/mukul/dev-ai/models:/models:ro
+
+    environment:
+      HF_HOME: /root/.cache/huggingface
+      HF_HUB_OFFLINE: "1"
+      CUDA_DEVICE_ORDER: PCI_BUS_ID
+      CUDA_VISIBLE_DEVICES: "0"
+      PYTORCH_CUDA_ALLOC_CONF: expandable_segments:True
+
+    shm_size: "8g"
+    ipc: host
+
+    ulimits:
+      memlock: -1
+      stack: 67108864
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["0"]
+              capabilities: [gpu]
+
+    restart: unless-stopped
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:10009/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 180s
+
+  # ─────────────────────────────────────────────────────────────
+  # jarvis — Qwen3.8 27b
+  # ─────────────────────────────────────────────────────────────
+  jarvis:
+    image: lmsysorg/sglang:qwen38-27b
+
+    command:
+      - "sglang"
+      - "serve"
+      - "--trust-remote-code"
+      - "--model-path=/model"
+      - "--served-model-name=jarvis"
+      - "--kv-cache-dtype=auto"
+      - "--mem-fraction-static=0.6"
+      - "--attention-backend=flashinfer"
+      - "--chunked-prefill-size=8192"
+      - "--reasoning-parser=qwen3"
+      - "--tool-call-parser=qwen3_coder"
+      - "--mamba-full-memory-ratio=6.08"
+      - "--host=0.0.0.0"
+      - "--port=10010"
+      - "--speculative-algorithm=DSPARK"
+      - "--speculative-draft-model-path=/drafter"
+      - "--speculative-draft-attention-backend=flashinfer"
+      - "--mamba-radix-cache-strategy=extra_buffer"
+      - "--mamba-ssm-dtype=bfloat16"
+
+    ports:
+      - "10010:10010"
+
+    volumes:
+      - /home/mukul/dev-ai/models/RadixArk/Qwen3.8-27B-NVFP4:/model:ro
+      - /home/mukul/dev-ai/models/RadixArk/Qwen3.8-27B-DSpark:/drafter:ro
+      - ~/.cache/huggingface:/root/.cache/huggingface
+
+    environment:
+      HF_HOME: /root/.cache/huggingface
+      HF_HUB_OFFLINE: "1"
+      CUDA_DEVICE_ORDER: PCI_BUS_ID
+      CUDA_VISIBLE_DEVICES: "0"
+
+    shm_size: "32g"
+    ipc: host
+
+    ulimits:
+      memlock: -1
+      stack: 67108864
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["0"]
+              capabilities: [gpu]
+
+    restart: unless-stopped
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:10010/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 900s
